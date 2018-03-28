@@ -17,6 +17,7 @@ Usage:
     -q | --quiet                Don't output any status messages
     -t TIMEOUT | --timeout=TIMEOUT
                                 Timeout in seconds, zero for no timeout
+    -sleep					   when exiting to sleep mill
     -- COMMAND ARGS             Execute command with args after the test finishes
 USAGE
     exit 1
@@ -107,6 +108,11 @@ do
         PORT="${1#*=}"
         shift 1
         ;;
+        -sleep)
+        SLEEP="$2"
+        if [[ $SLEEP == "" ]]; then break; fi
+        shift 2
+        ;;
         -t)
         TIMEOUT="$2"
         if [[ $TIMEOUT == "" ]]; then break; fi
@@ -140,6 +146,7 @@ TIMEOUT=${TIMEOUT:-15}
 STRICT=${STRICT:-0}
 CHILD=${CHILD:-0}
 QUIET=${QUIET:-0}
+SLEEP=${SLEEP:-0}
 
 # check to see if timeout is from busybox?
 # check to see if timeout is from busybox?
@@ -164,6 +171,11 @@ else
         wait_for
         RESULT=$?
     fi
+fi
+
+if [[ $SLEEP -gt 0 ]]; then
+	echoerr "sleep $SLEEP s..."
+	sleep $SLEEP
 fi
 
 if [[ $CLI != "" ]]; then
